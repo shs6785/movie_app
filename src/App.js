@@ -1,26 +1,64 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import Movie from './Movie.js';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component {
+  // Render: componentWillMount() -> render() -> componentDidMount()
+  // Update componentWillReceiveProps() -> shouldComponentUpdate() -> componentWillUpdate() -> render() -> componentDidUpdate()
+
+  state = {
+ 
+  }
+
+  componentDidMount(){
+    console.log("component")
+    this._getMovies();
+  }  
+
+
+   _getMovies = async () => {
+    console.log("getmovies")
+    const movies = await this._callApi()
+    this.setState({
+      movies
+    })
+  }
+
+  _renderMovies = () => {
+    console.log("rendermovies")
+
+    const movies = this.state.movies.map((movie, index) => {
+      return <Movie 
+          title = {movie.title}
+          poster = {movie.medium_cover_image} 
+          genres = {movie.genres}
+          synopsis= {movie.synopsis}
+          key = {movie.id}  
+          />
+    })
+    return movies
+  }
+
+
+  _callApi = () => {
+    console.log("callapi")
+    return fetch('https://yts.am/api/v2/list_movies.json?sort by =rating')
+    .then(res => res.json())
+    .then(json => json.data.movies)
+    .catch(err => console.log(err))
+  }
+
+  render() {
+    console.log("render")
+    return (
+      <div className="App">
+        {this.state.movies ? this._renderMovies() : 'loding'}
+      </div>
+    );
+  }
 }
+
+
 
 export default App;
